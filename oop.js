@@ -1,4 +1,8 @@
-PRIORITY = { "LOW": 1, "MEDIUM": 3, "HIGH": 5, "URGENT": 7 };
+const PRIORITY = {
+   LOW: 1,
+   MEDIUM: 3,
+   HIGH: 5,
+   URGENT: 7 };
 
 
 function validInteger (value) { // value can be a string or a number (integer)
@@ -40,7 +44,7 @@ function todaysDate () {
 class Task  {
   constructor(title, priority) {
     this._title = title; //priv
-    this.priority = priority;
+    this._priority = validatePriority(priority);
     this._added = todaysDate();
   }
 
@@ -63,17 +67,38 @@ class Task  {
 
 
 class ToDo {
-
-
-
+  constructor() {
+    this.tasks = new Map();
+  }
+  
+  add(task) {
+    const taskTitle = task.title.toLowerCase();
+    if (this.tasks.has(taskTitle)) {
+      throw new Error(`Task '${task.title}' already exists`);
+    }
+    this.tasks.set(taskTitle, task);
+    return this.tasks.size;
 }
 
+remove(title) {
+  const taskTitle = title.toLowerCase();
+  return this.tasks.delete(taskTitle);
+}
 
+list(priority = 0) {
+  return Array.from(this.tasks.values())
+  .filter(task => priority === 0 || task.priority === priority)
+  .map(task => [task.added, task.title, task.priority]);
+}
 
-
-
-
-
+task(title) { 
+  const taskTitle = title.toLowerCase();
+  const foundTask = this.tasks.get(taskTitle);
+  if (!foundTask) throw new Error(`Task '${title}' Not Found`); 
+  return foundTask;
+  }
+  
+}
 
 // Leave this code here for the automated tests
 module.exports = {
